@@ -1,20 +1,18 @@
-version: '3.9'
-
 services:
   watchtower:
-    container_name: ${WatchTowerContainer}
-    image: ${WatchTowerImage}
+    container_name: watchtower
+    image: containrrr/watchtower
     environment:
-      - WATCHTOWER_CLEANUP=${WatchTowerCleanup}
+      - WATCHTOWER_CLEANUP=true
     volumes:
-      - ${DockerSockPath}:${DockerSockPath}
-    restart: ${Restart}
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
 
   autoheal:
-    container_name: ${AutoHealContainer}
-    image: ${AutoHealImage}
+    container_name: autoheal
+    image: willfarrell/autoheal
     environment:
       - AUTOHEAL_CONTAINER_LABEL=all
     volumes:
-      - ${DockerSockMapping}
-    restart: ${Restart}
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
