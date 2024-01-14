@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  watchtower:
+    container_name: ${WatchTowerContainer}
+    image: ${WatchTowerImage}
+    environment:
+      - WATCHTOWER_CLEANUP=${WatchTowerCleanup}
+    volumes:
+      - ${DockerSockPath}:${DockerSockPath}
+    restart: ${Restart}
+
+  autoheal:
+    container_name: ${AutoHealContainer}
+    image: ${AutoHealImage}
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - ${DockerSockMapping}
+    restart: ${Restart}
