@@ -1,34 +1,47 @@
-# Portainer server for the NAS
+# Portainer server services, contains server and agent
 # Start: docker compose up -d
 # Stop: docker compose down --volumes
-# Environment: .env
+
 version: '3.9'
 
 networks:
   portainer-network:
-    name: ${NetworkName:?err}
+    name: portainer-network
     driver: bridge
     ipam:
       driver: default
       config:
-        - subnet: ${NetworkSubnet:?err}
-          gateway: ${NetworkGateway:?err}
+        - subnet: 172.29.10.0/24
+          gateway: 172.29.10.254
     enable_ipv6: false
 
 services:
-  portainer:
-    container_name: ${ContainerName:?err}
-    image: ${Image:?err}
+  server:
+    container_name: portainer-server
+    image: ${PortainerServerImage:?err}
     ports:
-      - ${TcpPorts:?err}
-      - ${HttpPorts:?err}
-      - ${HttpsPorts:?err}
+      - 8000:8000
+      - 9000:9000
+      - 9443:9443
     volumes:
       - ${PortainerVolumeMapping:?err}
-      - ${DockerSockMapping:?err}
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - ${NetworkName:?err}
+      - portainer-network
     dns:
-      - ${NetworkDNS1:?err}
-      - ${NetworkDNS2:?err}
-    restart: ${Restart:?err}
+      - 45.90.28.29
+      - 45.90.30.29
+    restart: unless-stopped
+
+  agent:
+    container_name: portainer-agent
+    image: portainer/agent:latest
+    ports:
+      - 9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+      - /:/host
+    restart: unless-stopped
+    stdin_open: true
+    tty: true

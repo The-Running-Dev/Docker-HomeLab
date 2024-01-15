@@ -10,11 +10,11 @@ https://github.com/The-Running-Dev/Docker-HomeLab/
 
 ```portainer-agent/docker-compose.yml``` The compose file for the Portainer agent. No configuration is needed, runs as is, and it is meant to be used with Linux based containers. Documentation is at <https://docs.portainer.io/v/2.15/start/install/agent/docker/linux>.
 
-### Portainer Server
+### Portainer Server (with Agent)
 
-```portainer-server/docker-compose.yml``` The compose file for the Portainer server. Configuration is done through the ```.env``` file. Documentation is at <https://docs.portainer.io/v/2.15/start/install/server/docker/linux>.
+```portainer-server/docker-compose.yml``` The compose file for the Portainer services. This includes ```portainer/portainer-ce:latest``` and ```portainer/agent:latest``` Configuration is done through ```.env``` file (See ```.env.sample```). Documentation is at <https://docs.portainer.io/v/2.15/start/install/server/docker/linux>.
 
-```portainer-server/.env``` The environment configuration for the Portainer server compose, mostly self explanatory. Note: This deployment supports access both over HTTP and HTTPs (with self signed certificate inside the container). If you want to use your own SSL certificate, the documentation is at <https://docs.portainer.io/advanced/ssl>.
+```portainer-server/.env.sample``` The environment configuration for the Portainer services, mostly self explanatory. Note: This deployment supports access both over HTTP and HTTPs (with self signed certificate inside the container). If you want to use your own SSL certificate, the documentation is at <https://docs.portainer.io/advanced/ssl>.
 
 ### Watchtower
 
