@@ -1,0 +1,34 @@
+# Portainer server for the NAS
+# Start: docker compose up -d
+# Stop: docker compose down --volumes
+# Environment: .env
+version: '3.9'
+
+networks:
+  portainer-network:
+    name: ${NetworkName:?err}
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${NetworkSubnet:?err}
+          gateway: ${NetworkGateway:?err}
+    enable_ipv6: false
+
+services:
+  portainer:
+    container_name: ${ContainerName:?err}
+    image: ${Image:?err}
+    ports:
+      - ${TcpPorts:?err}
+      - ${HttpPorts:?err}
+      - ${HttpsPorts:?err}
+    volumes:
+      - ${PortainerVolumeMapping:?err}
+      - ${DockerSockMapping:?err}
+    networks:
+      - ${NetworkName:?err}
+    dns:
+      - ${NetworkDNS1:?err}
+      - ${NetworkDNS2:?err}
+    restart: ${Restart:?err}
