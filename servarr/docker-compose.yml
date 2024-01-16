@@ -12,6 +12,22 @@ networks:
     enable_ipv6: false
 
 services:
+  overseerr:
+    container_name: overseerr
+    image: sctx/overseerr:latest
+    environment:
+      - TZ=Etc/UTC
+      - PORT=${OverseerrInternalPort:?err}
+    volumes:
+      - ${ConfigRootPath:?err}/overseerr:/app/config
+    network_mode: service:vpn
+    depends_on:
+      vpn:
+        condition: service_healthy
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
   vpn:
     container_name: nordlynx
     image: ghcr.io/bubuntux/nordlynx
@@ -24,9 +40,10 @@ services:
     volumes:
       - /lib/modules:/lib/modules:ro
     ports:
-      - 8200:8200
-      - 6981:6981
-      - 6981:6981/udp
+      - ${OverseerrPorts:?err}
+      - ${QBitTorrentWebUIPorts:?err}
+      - ${QBitTorrentTCPPorts:?err}
+      - ${QBitTorrentUDPPorts:?err}
     environment:
       - PRIVATE_KEY=${NordVPNPrivateKey:?err}
       - ALLOWED_IPS=0.0.0.0/1,128.0.0.0/2
@@ -62,7 +79,7 @@ services:
       - PGID=1000
       - UMASK=002
       - TZ=Etc/UTC
-      - WEBUI_PORT=8200
+      - WEBUI_PORT=${QBitTorrentInternalPort:?err}
       - DOCKER_MODS=ghcr.io/themepark-dev/theme.park:qbittorrent-develop
       - TP_THEME=dark
     network_mode: service:vpn
