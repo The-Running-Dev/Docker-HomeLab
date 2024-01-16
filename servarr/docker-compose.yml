@@ -1,0 +1,74 @@
+version: '3.9'
+
+networks:
+  servarr-network:
+    name: servarr-network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.29.20.0/24
+          gateway: 172.29.20.254
+    enable_ipv6: false
+
+services:
+  vpn:
+    container_name: nordlynx
+    image: ghcr.io/bubuntux/nordlynx
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_MODULE
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /lib/modules:/lib/modules:ro
+    ports:
+      - 8200:8200
+      - 6881:6881
+      - 6881:6881/udp
+    environment:
+      - PRIVATE_KEY=${NordVPNPrivateKey:?err}
+      - ALLOWED_IPS=0.0.0.0/1,128.0.0.0/2
+      - NET_LOCAL=172.29.0.0/12,100.0.0.0/16,192.168.1.0/16
+      - TZ=Etc/UTC
+      - "POST_UP=ip -4 route add $$(wg | awk -F'[: ]' '/endpoint/ {print $$5}') via $$(ip route | awk '/default/ {print $$3}')"
+      - "PRE_DOWN=ip -4 route del $$(route -n | awk '/255.255.255.255/ {print $$1}') via $$(ip route | awk '/default/ {print $$3}')"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.conf.all.rp_filter=2
+      - net.ipv6.conf.all.disable_ipv6=1
+    networks:
+      - servarr-network
+    dns:
+      - 45.90.28.29
+      - 45.90.30.29
+    healthcheck:
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+  qbittorrent:
+    container_name: qbittorrent
+    image: lscr.io/linuxserver/qbittorrent:latest
+    volumes:
+      - ${ConfigRootPath:?err}/qbittorrent:/config
+      - ${DownloadsPath:?err}:/downloads
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8200
+      - DOCKER_MODS=ghcr.io/themepark-dev/theme.park:qbittorrent-develop
+      - TP_THEME=dark
+    network_mode: service:vpn
+    depends_on:
+      vpn:
+        condition: service_healthy
+    restart: unless-stopped
+    stdin_open: true
+    tty: true

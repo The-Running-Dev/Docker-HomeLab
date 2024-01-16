@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  qbittorrent:
+    container_name: qbittorrent
+    image: lscr.io/linuxserver/qbittorrent:latest
+    volumes:
+      - ${ConfigPath:?err}:/config
+      - ${DownloadsPath:?err}:/downloads
+    ports:
+      - 8080:8080
+      - 6881:6881
+      - 6881:6881/udp
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8080
+      - DOCKER_MODS=ghcr.io/themepark-dev/theme.park:qbittorrent-develop
+      - TP_THEME=dark
+    restart: unless-stopped

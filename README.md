@@ -14,7 +14,15 @@ https://github.com/The-Running-Dev/Docker-HomeLab/
 
 ```portainer-server/docker-compose.yml``` The compose file for the Portainer services. This includes ```portainer/portainer-ce:latest``` and ```portainer/agent:latest``` Configuration is done through ```.env``` file (See ```.env.sample```). Documentation is at <https://docs.portainer.io/v/2.15/start/install/server/docker/linux>.
 
-```portainer-server/.env.sample``` The environment configuration for the Portainer services, mostly self explanatory. Note: This deployment supports access both over HTTP and HTTPs (with self signed certificate inside the container). If you want to use your own SSL certificate, the documentation is at <https://docs.portainer.io/advanced/ssl>.
+```portainer-server/.env.sample``` The environment configuration for the Portainer services, self explanatory. Note: This deployment supports access both over HTTP and HTTPs (with self signed certificate inside the container). If you want to use your own SSL certificate, the documentation is at <https://docs.portainer.io/advanced/ssl>.
+
+### Servarr
+
+```servarr/docker-compose.yml``` The compose file for the Servarr services. This includes NordLynx (```ghcr.io/bubuntux/nordlynx```) for VPN container, QBitTorrent ( ```lscr.io/linuxserver/qbittorrent:latest```). Configuration is done through ```.env``` file (See ```.env.sample```). Documentation for Servarr apps is at <https://wiki.servarr.com>.
+
+### QBitTorrent
+
+```qbittorrent/docker-compose.yml``` The compose file for QBitTorrent stand-alone.Configuration is done through ```.env``` file (See ```.env.sample```). Documentation is at <https://docs.linuxserver.io/images/docker-qbittorrent>.
 
 ### Watchtower
 
