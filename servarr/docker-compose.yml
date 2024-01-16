@@ -25,8 +25,8 @@ services:
       - /lib/modules:/lib/modules:ro
     ports:
       - 8200:8200
-      - 6881:6881
-      - 6881:6881/udp
+      - 6981:6981
+      - 6981:6981/udp
     environment:
       - PRIVATE_KEY=${NordVPNPrivateKey:?err}
       - ALLOWED_IPS=0.0.0.0/1,128.0.0.0/2
